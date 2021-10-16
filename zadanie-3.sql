@@ -1,0 +1,65 @@
+USE vk2;
+
+-- Справочник стран
+DROP TABLE IF EXISTS countries;
+CREATE TABLE countries (
+  	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+  	name VARCHAR(100) NOT NULL UNIQUE,
+  	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+  	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Справочник городов
+DROP TABLE IF EXISTS cities;
+CREATE TABLE cities (
+  	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+  	name VARCHAR(150) NOT NULL,
+  	country_id INT UNSIGNED NOT NULL,
+  	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+  	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Таблица лайков для медиафайлов пользователей 
+DROP TABLE IF EXISTS media_likes;
+CREATE TABLE media_likes (
+	media_id BIGINT UNSIGNED NOT NULL,
+	from_user_id BIGINT UNSIGNED NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (media_id, from_user_id),
+	FOREIGN KEY (media_id) REFERENCES media (id),
+	FOREIGN KEY (from_user_id) REFERENCES users (id)
+);
+
+-- Таблица постов
+DROP TABLE IF EXISTS posts;
+CREATE TABLE posts (
+	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	user_id BIGINT UNSIGNED NOT NULL,
+	body TEXT NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+-- Таблица связей для медиа внутри постов
+DROP TABLE IF EXISTS posts_media;
+CREATE TABLE posts_media (
+	post_id BIGINT UNSIGNED NOT NULL,
+	media_id BIGINT UNSIGNED NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (post_id, media_id),
+    FOREIGN KEY (media_id) REFERENCES media (id),
+	FOREIGN KEY (post_id) REFERENCES posts (id)
+);
+
+-- Таблица лайков для постов
+DROP TABLE IF EXISTS posts_likes;
+CREATE TABLE posts_likes (
+	post_id BIGINT UNSIGNED NOT NULL,
+	from_user_id BIGINT UNSIGNED NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (post_id, from_user_id),
+	FOREIGN KEY (post_id) REFERENCES posts (id),
+	FOREIGN KEY (from_user_id) REFERENCES users (id)
+);
